@@ -49,8 +49,8 @@ public class ZooKeeperServiceDiscovery implements ServiceDiscovery {
                 address = addressList.get(0);
                 LOGGER.debug("get only address node: {}", address);
             } else {
-                // 若存在多个地址，则随机获取一个地址
-                address = addressList.get(ThreadLocalRandom.current().nextInt(size));
+                // 若存在多个地址，则根据负载均衡算法获取一个地址
+                address = LoadBalance.Random_LoadBalance(addressList);
                 LOGGER.debug("get random address node: {}", address);
             }
             // 获取 address 节点的值
