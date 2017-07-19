@@ -25,7 +25,7 @@ public class ZooKeeperServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public void register(String serviceName, String serviceAddress) {
+    public void register(String serviceName, String serviceAddress, int weight) {
         // 创建 registry 节点（持久）
         String registryPath = Constant.ZK_REGISTRY_PATH;
         if (!zkClient.exists(registryPath)) {
@@ -41,6 +41,7 @@ public class ZooKeeperServiceRegistry implements ServiceRegistry {
         // 创建 address 节点（临时）
         String addressPath = servicePath + "/address-";
         String addressNode = zkClient.createEphemeralSequential(addressPath, serviceAddress);
+        LoadBalance.add(addressPath, weight);
         LOGGER.debug("create address node: {}", addressNode);
     }
 }

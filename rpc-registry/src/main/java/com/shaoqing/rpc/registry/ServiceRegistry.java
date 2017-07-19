@@ -13,6 +13,7 @@ public interface ServiceRegistry {
      *
      * @param serviceName    服务名称
      * @param serviceAddress 服务地址
+     * @param weight		 权重
      */
-    void register(String serviceName, String serviceAddress);
+    void register(String serviceName, String serviceAddress, int weight);
 }

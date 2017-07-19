@@ -18,6 +18,14 @@ public class LoadBalance {
 	 */
 	private static Map<String, Integer> invoker = new HashMap<String, Integer>();
 	
+	public static void add(String address, int weight){
+		invoker.put(address, weight);
+	}
+	
+	public static void delete(String address){
+		invoker.remove(address);
+	}
+	
 	/**
 	 * 随机负载均衡策略，参考了Dubbo的随机策略 
 	 */
