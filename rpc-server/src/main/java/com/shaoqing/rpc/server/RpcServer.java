@@ -22,6 +22,8 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * RPC 服务器（用于发布 RPC 服务）
@@ -36,6 +38,8 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
     private String serviceAddress;
 
     private ServiceRegistry serviceRegistry;
+    
+    private static ExecutorService threadPoolExecutor = Executors.newFixedThreadPool(16);
 
     /**
      * 存放 服务名 与 服务对象 之间的映射关系
@@ -97,7 +101,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
             // 注册 RPC 服务地址
             if (serviceRegistry != null) {
                 for (String interfaceName : handlerMap.keySet()) {
-                    serviceRegistry.register(interfaceName, serviceAddress, 1);
+                    serviceRegistry.register(interfaceName, serviceAddress);
                     LOGGER.debug("register service: {} => {}", interfaceName, serviceAddress);
                 }
             }
@@ -108,5 +112,13 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
+    }
+    
+    /**
+     * 提交任务 
+     */
+    public static void submit(Runnable task){
+    	
+        threadPoolExecutor.submit(task);
     }
 }

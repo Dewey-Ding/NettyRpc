@@ -32,18 +32,25 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, RpcRequest request) throws Exception {
-        // 创建并初始化 RPC 响应对象
-        RpcResponse response = new RpcResponse();
-        response.setRequestId(request.getRequestId());
-        try {
-            Object result = handle(request);
-            response.setResult(result);
-        } catch (Exception e) {
-            LOGGER.error("handle result failure", e);
-            response.setException(e);
-        }
-        // 写入 RPC 响应对象并自动关闭连接
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        RpcServer.submit(new Runnable(){
+			@Override
+			public void run() {
+				// 创建并初始化 RPC 响应对象
+		        RpcResponse response = new RpcResponse();
+		        response.setRequestId(request.getRequestId());
+		        try {
+		            Object result = handle(request);
+		            response.setResult(result);
+		        } catch (Exception e) {
+		            LOGGER.error("handle result failure", e);
+		            response.setException(e);
+		        }
+		        // 写入 RPC 响应对象并自动关闭连接
+		        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);				
+			}
+        	
+        });
+    	
     }
 
     private Object handle(RpcRequest request) throws Exception {
